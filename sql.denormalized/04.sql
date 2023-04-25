@@ -1,13 +1,5 @@
-SELECT (count(*) - 2) as count
+SELECT count(DISTINCT data->>'id')
 FROM tweets_jsonb
-WHERE 
-   ( 
-    to_tsvector('english',data->>'text')@@
-        to_tsquery('english','coronavirus')
-    OR
-    to_tsvector('english',data->'extended_tweet'->>'full_text')@@
-        to_tsquery('english','coronavirus')
-    )
-    AND
-    data->>'lang' = 'en'
-;
+WHERE to_tsvector('english', COALESCE(data->'extended_tweet'->>'full_text', data->>'text')) @@
+      to_tsquery('english','coronavirus')
+  AND data->>'lang' = 'en';
